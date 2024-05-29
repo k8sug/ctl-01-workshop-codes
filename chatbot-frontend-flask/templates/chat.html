@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>K8SUG AI - Workshop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Clear the session on page load
+    fetch('/clear_session', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => console.log(data.status))
+        .catch(error => console.error('Error clearing session:', error));
+
+    const form = document.querySelector('.chatbot-input-form');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const input = document.querySelector('input[name="message"]');
+        const messageText = input.value;
+        if (messageText.trim()) {
+            displayMessage(messageText, true);  // Display user message immediately
+            displayMessage('', false, true); 
+            input.value = '';  // Clear the input after sending
+            // Send the POST request
+            fetch('/', {
+                method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message: messageText })
+}).then(response => response.json())
+.then(data => {
+    removeLoadingIndicator();  // Remove the loading indicator
+    displayMessage(data.response, false);  // Display server (AI) response
+    updateSystemInfo(data.podName, data.nodeName);  // Update system info
+}).catch(error => {
+    console.error('Error:', error);
+    removeLoadingIndicator();  // Ensure loading indicator is removed even on error
+    displayMessage('Error: Could not reach the backend.', false);  // Error handling// Error handling  // Error handling
+            });
+        }
+    });
+
+    function displayMessage(text, isUser) {
+        const messagesContainer = document.querySelector('.chatbot-messages');
+        const div = document.createElement('div');
+        div.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+        div.textContent = text;
+        messagesContainer.appendChild(div);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;  // Scroll to the bottom
+    }
+
+    function updateSystemInfo(podName, nodeName) {
+        const systemInfo = document.querySelector('.system-info');
+        systemInfo.innerHTML = `<span>Pod: ${podName}</span> `;
+    }
+
+    function displayMessage(text, isUser, isLoading = false) {
+    const messagesContainer = document.querySelector('.chatbot-messages');
+    let div;
+
+    if (isLoading) {
+        div = document.createElement('div');
+        div.className = 'message loading-dots';
+        div.innerHTML = '<span>.</span>';  // Using <span> for the loading dots
+        messagesContainer.appendChild(div);
+    } else {
+        div = document.createElement('div');
+        div.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+        div.textContent = text;
+        messagesContainer.appendChild(div);
+    }
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;  // Ensure new message is visible
+}
+
+    function removeLoadingIndicator() {
+        const loadingIndicator = document.querySelector('.loading-dots');
+        if (loadingIndicator) {
+            loadingIndicator.remove();  // This removes the element from the DOM
+        }
+    }
+
+});
+
+        </script>
+        
+
+</head>
+<body>
+    <div class="head">
+      <h1>K8SUG Chat - GODEL 1.1</h1>
+      <div class="chatbot-container">
+        <div class="system-info">
+          <span>Pod: {{ podName }}</span>
+        </div>
+        <div class="chatbot-messages">
+        
+          {% for message in messages %}
+          <div class="message {{ 'user-message' if message.user else 'ai-message' }}">
+            {{ message.text }}
+          </div>
+          {% endfor %}
+      
+        </div>
+        <form class="chatbot-input-form" method="POST">
+          <input type="text" name="message" placeholder="Type your message..." autofocus>
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+</body>
+</html>

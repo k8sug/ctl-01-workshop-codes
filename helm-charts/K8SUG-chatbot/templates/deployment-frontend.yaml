@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "k8sug-chatbot.fullname" . }}-frontend
+  labels:
+    {{- include "k8sug-chatbot.labels" . | nindent 4 }}
+spec:
+    {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.frontend.replicaCount }}
+    {{- end }}
+  selector:
+    matchLabels:
+      app: {{ include "k8sug-chatbot.fullname" . }}-frontend
+  template:
+    metadata:
+      labels:
+        app: {{ include "k8sug-chatbot.fullname" . }}-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default "latest" }}
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.frontend.service.port }}
+          env:
+            - name: API_ENDPOINT
+              value: http://{{ include "k8sug-chatbot.fullname" . }}-backend:{{ .Values.backend.service.port }}

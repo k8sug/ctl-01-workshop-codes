@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chatbot-config
+data:
+  INSTRUCTION: {{ .Values.config.INSTRUCTION | quote }}
+  KNOWLEDGE: {{ .Values.config.KNOWLEDGE | quote }}
+  MAX_LENGTH: {{ .Values.config.MAX_LENGTH | quote }}
+  MIN_LENGTH: {{ .Values.config.MIN_LENGTH | quote }}
+  TOP_P: {{ .Values.config.TOP_P | quote }}
+  DO_SAMPLE: {{ .Values.config.DO_SAMPLE | quote }}
