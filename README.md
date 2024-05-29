@@ -79,6 +79,20 @@ To deploy this application on Kubernetes, please follow the detailed instruction
 - **Scalability:** Kubernetes handles scaling and resilience.
 - **Health Checks:** Includes endpoints for health monitoring.
 
+## GODEL Reference
+
+The backend utilizes the GODEL model, which is detailed in the following publication:
+
+@misc{peng2022godel,
+author = {Peng, Baolin and Galley, Michel and He, Pengcheng and Brockett, Chris and Liden, Lars and Nouri, Elnaz and Yu, Zhou and Dolan, Bill and Gao, Jianfeng},
+title = {GODEL: Large-Scale Pre-training for Goal-Directed Dialog},
+howpublished = {arXiv},
+year = {2022},
+month = {June},
+url = {https://www.microsoft.com/en-us/research/publication/godel-large-scale-pre-training-for-goal-directed-dialog/},
+}
+
+
 ## Getting Started
 
 For detailed steps on how to set up and deploy the application, refer to our [GitBook documentation](https://k8sug.gitbook.io/k8sug-ctl-01/).
